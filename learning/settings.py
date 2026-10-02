@@ -1,3 +1,4 @@
+# Explaining each block of configuration in setting.py
 """
 Django settings for learning project.
 
