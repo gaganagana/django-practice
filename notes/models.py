@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -11,6 +12,12 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
         ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('notes:category_notes', kwargs={'slug': self.slug})
 
 
 class Note(models.Model):
@@ -44,3 +51,23 @@ class Note(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['priority']),
+            models.Index(fields=['is_archived']),
+        ]
+
+    def __str__(self):
+        return f"{self.title} ({self.get_priority_display()})"
+
+    def get_absolute_url(self):
+        return reverse('notes:detail', kwargs={'pk': self.pk})
+
+    @property
+    def word_count(self):
+        return len(self.content.split()) if self.content else 0
+
+    @property
+    def summary(self):
+        if len(self.content) <= 120:
+            return self.content
+        return self.content[:117] + '...'
