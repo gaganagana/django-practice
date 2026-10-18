@@ -21,3 +21,31 @@ def note_detail_fbv(request, pk):
         'note': note,
         'view_type': 'Function-Based View',
     })
+
+from django.views.generic import ListView, DetailView
+
+
+class NoteListView(ListView):
+    """Generic Class-Based View for listing active notes with pagination."""
+    model = Note
+    template_name = 'notes/note_list.html'
+    context_object_name = 'notes'
+    paginate_by = 6
+
+    def get_queryset(self):
+        return Note.objects.filter(is_archived=False).select_related('category')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        context['total_count'] = Note.objects.count()
+        context['active_count'] = Note.objects.filter(is_archived=False).count()
+        context['view_type'] = 'Class-Based View (ListView)'
+        return context
+
+
+class NoteDetailView(DetailView):
+    """Generic Class-Based View for viewing note details."""
+    model = Note
+    template_name = 'notes/note_detail.html'
+    context_object_name = 'note'
