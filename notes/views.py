@@ -49,3 +49,41 @@ class NoteDetailView(DetailView):
     model = Note
     template_name = 'notes/note_detail.html'
     context_object_name = 'note'
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+
+
+class NoteCreateView(SuccessMessageMixin, CreateView):
+    """Generic Class-Based View for creating new notes."""
+    model = Note
+    form_class = NoteForm
+    template_name = 'notes/note_form.html'
+    success_message = 'Note "%(title)s" was successfully created!'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'Create New Note'
+        return context
+
+
+class NoteUpdateView(SuccessMessageMixin, UpdateView):
+    """Generic Class-Based View for editing existing notes."""
+    model = Note
+    form_class = NoteForm
+    template_name = 'notes/note_form.html'
+    success_message = 'Note "%(title)s" was successfully updated!'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'Update Note'
+        return context
+
+
+class NoteDeleteView(DeleteView):
+    """Generic Class-Based View for confirming and deleting notes."""
+    model = Note
+    template_name = 'notes/note_confirm_delete.html'
+    success_url = reverse_lazy('notes:list')
+    context_object_name = 'note'
