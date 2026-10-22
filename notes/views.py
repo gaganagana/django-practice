@@ -22,6 +22,7 @@ def note_detail_fbv(request, pk):
         'view_type': 'Function-Based View',
     })
 
+from django.db.models import Q
 from django.views.generic import ListView, DetailView
 
 
@@ -33,7 +34,17 @@ class NoteListView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        return Note.objects.filter(is_archived=False).select_related('category')
+        qs = Note.objects.filter(is_archived=False).select_related('category')
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(Q(title__icontains=q) | Q(content__icontains=q))
+        priority = self.request.GET.get('priority', '').strip()
+        if priority:
+            qs = qs.filter(priority=priority)
+        category_slug = self.request.GET.get('category', '').strip()
+        if category_slug:
+            qs = qs.filter(category__slug=category_slug)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
