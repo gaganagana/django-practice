@@ -23,6 +23,7 @@ def note_detail_fbv(request, pk):
     })
 
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
 
 
@@ -67,6 +68,10 @@ from django.urls import reverse_lazy
 
 
 class NoteCreateView(SuccessMessageMixin, CreateView):
+    def form_valid(self, form):
+        if self.request.user.is_authenticated:
+            form.instance.user = self.request.user
+        return super().form_valid(form)
     """Generic Class-Based View for creating new notes."""
     model = Note
     form_class = NoteForm

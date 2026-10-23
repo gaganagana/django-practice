@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -31,6 +32,7 @@ class Note(models.Model):
         (PRIORITY_HIGH, 'High Priority'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes', null=True, blank=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
     category = models.ForeignKey(
