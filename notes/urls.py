@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:pk>/delete/', views.NoteDeleteView.as_view(), name='delete'),
     path('fbv/', views.note_list_fbv, name='list_fbv'),
     path('fbv/<int:pk>/', views.note_detail_fbv, name='detail_fbv'),
+    path('api/notes/', views.note_api_list, name='api_list'),
+    path('api/stats/', views.note_api_stats, name='api_stats'),
 ]

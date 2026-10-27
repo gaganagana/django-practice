@@ -103,3 +103,22 @@ class NoteDeleteView(DeleteView):
     template_name = 'notes/note_confirm_delete.html'
     success_url = reverse_lazy('notes:list')
     context_object_name = 'note'
+
+from django.http import JsonResponse
+
+
+def note_api_list(request):
+    """Lightweight REST-like JSON endpoint returning all active notes."""
+    notes = Note.objects.filter(is_archived=False).values('id', 'title', 'content', 'priority', 'created_at')
+    return JsonResponse({'count': len(notes), 'results': list(notes)})
+
+
+def note_api_stats(request):
+    """JSON metrics endpoint returning notes count by priority."""
+    stats = {
+        'total': Note.objects.count(),
+        'active': Note.objects.filter(is_archived=False).count(),
+        'high_priority': Note.objects.filter(priority='high', is_archived=False).count(),
+        'categories_count': Category.objects.count(),
+    }
+    return JsonResponse(stats)
